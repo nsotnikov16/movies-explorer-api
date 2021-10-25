@@ -24,7 +24,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: 2,
     maxlength: 30,
-    /* default: 'Жак-Ив Кусто', */
   },
 });
 
@@ -45,4 +44,5 @@ userSchema.statics.findUserByCredentials = function checkEmail(email, password) 
         });
     });
 };
+
 module.exports = mongoose.model('user', userSchema);

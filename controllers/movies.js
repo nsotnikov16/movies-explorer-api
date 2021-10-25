@@ -52,9 +52,10 @@ module.exports.createMovie = (req, res, next) => {
         if (err.name === 'ValidationError') {
           throw new BadRequestError('Переданы некорректные данные при добавлении фильма');
         }
+        throw err;
       })
       .catch(next);
-  });
+  }).catch(next);
 };
 
 module.exports.deleteMovieId = (req, res, next) => {
@@ -66,7 +67,7 @@ module.exports.deleteMovieId = (req, res, next) => {
       return next(new ForbiddenError('Доступ запрещен'));
     }
 
-    return Movie.findByIdAndRemove(req.params.movieId)
+    return Movie.remove(movie)
       .then(() => {
         reqSuccess(res, { message: 'movie deleted' });
       })
@@ -74,7 +75,8 @@ module.exports.deleteMovieId = (req, res, next) => {
         if (err.name === 'CastError') {
           throw new BadRequestError('Переданы некорректные данные в метод удаления Фильма');
         }
+        throw err;
       })
       .catch(next);
-  });
+  }).catch(next);
 };

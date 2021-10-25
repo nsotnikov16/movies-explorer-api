@@ -2,12 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
-const { Joi, celebrate } = require('celebrate');
+
 const helmet = require('helmet');
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
 const limiter = require('./utils/limiter');
-const { login, createUser } = require('./controllers/users');
+
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const NotFoundError = require('./utils/classesErrors/NotFoundError');
@@ -21,33 +21,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(helmet());
 
-app.use(rateLimit(limiter));
-
 app.use(require('./middlewares/cors'));
 
 mongoose.connect(NODE_ENV === 'production' ? MONGO : 'mongodb://localhost:27017/moviesdb');
 
 app.use(requestLogger);
 
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), login);
+app.use(rateLimit(limiter));
 
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-    name: Joi.string().required().min(2).max(30),
-  }),
-}), createUser);
+app.use(require('./routes/auth'));
 
 app.use(auth);
 
-app.use('/users', require('./routes/users'));
-app.use('/movies', require('./routes/movies'));
+app.use(require('./routes/users'));
+app.use(require('./routes/movies'));
 
 app.use('*', () => { throw new NotFoundError('Страница не найдена'); });
 

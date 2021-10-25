@@ -7,9 +7,9 @@ const {
   getSaveMovies, createMovie, deleteMovieId,
 } = require('../controllers/movies');
 
-router.get('/', getSaveMovies);
+router.get('/movies', getSaveMovies);
 
-router.post('/', celebrate({
+router.post('/movies', celebrate({
   body: Joi.object().keys({
 
     country: Joi.string().required(),
@@ -22,10 +22,10 @@ router.post('/', celebrate({
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
     thumbnail: Joi.string().required().custom(validUrl),
-    movieId: Joi.string().hex().length(24).required(),
+    movieId: Joi.number().required(),
   }),
 }), createMovie);
 
-router.delete('/:movieId', celebrate(validIdParams('movieId')), deleteMovieId);
+router.delete('/movies/:movieId', celebrate(validIdParams('movieId')), deleteMovieId);
 
-module.exports = router;
+module.exports = ('/', router);
